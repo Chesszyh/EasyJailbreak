@@ -164,3 +164,7 @@ cython_debug/
 !/*/ *.jsonl
 results/*
 .DS_Store
+
+# virtualenv
+myenv/
+venv/
