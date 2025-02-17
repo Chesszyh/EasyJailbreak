@@ -27,12 +27,12 @@ class MCTSExploreSelectPolicy(SelectPolicy):
         self.inital_prompt_pool = inital_prompt_pool
         self.Questions = Questions
         self.step = 0
-        self.mctc_select_path = []
+        self.mctc_select_path = []  # 选择路径，记录所选节点的历史路径
         self.last_choice_index = None
         self.rewards = []
         self.ratio = ratio  # balance between exploration and exploitation
-        self.alpha = alpha  # penalty for level
-        self.beta = beta
+        self.alpha = alpha  # penalty for level：用于控制探索时跳出子节点的概率，值越高则越倾向于探索新的节点
+        self.beta = beta    # reward scaling factor：奖励缩放因子，用于调整节点的奖励值。
 
 
     def select(self) -> JailbreakDataset:
@@ -42,22 +42,24 @@ class MCTSExploreSelectPolicy(SelectPolicy):
         :return ~JailbreakDataset: The selected instance from the dataset.
         """
         self.step += 1
-        if len(self.Datasets) > len(self.rewards):
+        if len(self.Datasets) > len(self.rewards): # 如果数据集中包含的实例数大于奖励列表的长度，扩展奖励列表
             self.rewards.extend(
                 [0 for _ in range(len(self.Datasets) - len(self.rewards))])
         self.mctc_select_path = []
 
+        # 从初始提示池中选择一个节点 cur
         cur = max(
             self.inital_prompt_pool._dataset,
-            key=lambda pn:
+            key=lambda pn: # 选择标准Score(pn)
             self.rewards[pn.index] / (pn.visited_num + 1) +
             self.ratio * np.sqrt(2 * np.log(self.step) /
                                  (pn.visited_num + 0.01))
         )
         self.mctc_select_path.append(cur)
 
+        # 递归选择子节点，直到到达叶节点或者随机跳出(dfs)
         while len(cur.children) > 0:
-            if np.random.rand() < self.alpha:
+            if np.random.rand() < self.alpha: # 用于控制探索时跳出子节点的概率，值越高则越倾向于探索新的节点
                 break
             cur = max(
                 cur.children,

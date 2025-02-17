@@ -73,6 +73,6 @@ class EXP3SelectPolicy(SelectPolicy):
         """
         succ_num = sum([prompt_node.num_jailbreak for prompt_node in prompt_nodes])
 
-        r = 1 - succ_num / len(prompt_nodes)
-        x = -1 * r / self.probs[self.last_choice_index]
+        r = 1 - succ_num / len(prompt_nodes) # r：reward, 也等于失败率；r越高，权重更新幅度越大
+        x = -1 * r / self.probs[self.last_choice_index] # x：权重更新幅度
         self.weights[self.last_choice_index] *= np.exp(self.alpha * x / len(self.Datasets))

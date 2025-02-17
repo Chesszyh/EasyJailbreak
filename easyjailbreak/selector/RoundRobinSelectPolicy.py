@@ -12,6 +12,8 @@ class RoundRobinSelectPolicy(SelectPolicy):
     This policy iterates over the dataset, selecting each instance in turn, and then repeats the process.
     """
 
+    
+
     def __init__(self, Dataset: JailbreakDataset):
         """
         Initializes the RoundRobinSelectPolicy with a given JailbreakDataset.

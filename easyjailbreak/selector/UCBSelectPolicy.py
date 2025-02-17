@@ -42,7 +42,7 @@ class UCBSelectPolicy(SelectPolicy):
         self.step += 1
         scores = np.zeros(len(self.Datasets))
         for i, prompt_node in enumerate(self.Datasets):
-            smooth_visited_num = prompt_node.visited_num + 1
+            smooth_visited_num = prompt_node.visited_num + 1 # 实例的访问次数，避免为零
             scores[i] = self.rewards[i] / smooth_visited_num + \
                         self.explore_coeff * np.sqrt(2 * np.log(self.step) / smooth_visited_num)
 
